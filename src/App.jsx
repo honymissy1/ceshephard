@@ -29,7 +29,7 @@ const App =() => {
   return (
     <Routes>
       <Route path="/" element={<CellPage access={true} />}>
-        <Route path="" element={userdetails.data ? (<MarkAttendance />) : (<Login />)} />
+        <Route path="" element={<MarkAttendance />} />
         <Route path="addMember" element={<AddCellMembers />} />
         <Route path="cellmembers" element={<CellMember />} />
         <Route path="delete" element={<DeleteRequest />} />
