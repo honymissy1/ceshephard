@@ -4,7 +4,7 @@ import { useState, useContext } from 'react';
 import {db} from '../../firebaseConfig';
 import {collection, getDocs, query, where,} from 'firebase/firestore'
 import User from '../../context/userContext';
-import Image from '../../assets/Images/hero-img.gif'
+import Image from '../../assets/Images/login.jpg'
 const Login = () =>{
     const userdetails = useContext(User)
     const auth = getAuth();
