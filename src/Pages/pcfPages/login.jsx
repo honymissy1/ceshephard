@@ -3,10 +3,10 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, useContext } from 'react';
 import {db} from '../../firebaseConfig';
 import {collection, getDocs, query, where,} from 'firebase/firestore'
-import User from '../../context/userContext';
-import Image from '../../assets/Images/hero-img.gif'
-const Login = () =>{
-    const userdetails = useContext(User)
+import Admin from '../../context/admin';
+import Image from '../../assets/Images/login.jpg'
+const PcfLogin = () =>{
+    const userdetails = useContext(Admin)
     const auth = getAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -18,24 +18,13 @@ const Login = () =>{
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            console.log(user.email);
+              
+            userdetails.setUserData(user.email);
+            localStorage.setItem('Admin', JSON.stringify(user.email)) 
 
-            const q = query(collection(db, "cellmembers"), where("email", "==", user.email));
-            const querySnapshot = await getDocs(q);
-
-            console.log(querySnapshot);
-
-            querySnapshot.forEach(ele =>{
-                let data = {
-                    name: ele.data().fullname,
-                    email: ele.data().email,
-                    cell: ele.data().cell
-                }
-                console.log(data);
-
-                userdetails.setUserData(data.name, data.email, data.cell);
-                localStorage.setItem('ceshepharduser', JSON.stringify(data)) 
-                
-            })
+              
+            // Here we will add a user to the database with the email
 
             console.log(user); // User object containing information about the signed-in user
           } catch (error) {
@@ -44,11 +33,12 @@ const Login = () =>{
     }
     return (
         <div className='login-container'>
+            <div style={{}} className="overlay"></div>
             <div className='login-banner'>
                 <img src={Image} alt="" style={{width: "100%"}} />
             </div>
             <div className='login-content'>
-                <h1 style={{textAlign: 'center', padding:"30px"}}>Login Page</h1>
+                <h1 style={{textAlign: 'center', padding:"30px", color: 'rgb(228, 221, 221)', fontWeight: 700}}>PCF LOGIN</h1>
 
                 <Form action="" className="login-form">
                         <div style={{padding: '10px'}}>
@@ -71,4 +61,4 @@ const Login = () =>{
     )
 }
 
-export default Login
+export default PcfLogin

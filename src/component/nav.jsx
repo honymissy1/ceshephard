@@ -1,3 +1,7 @@
+import User from "../context/userContext";
+import { useContext } from "react";
+import { getAuth, signOut } from "firebase/auth";
+
 const style = {
   navStyle: {
     padding: '20px',
@@ -7,11 +11,32 @@ const style = {
   }
 }
 
+const Nav = ({logout}) => {
+  const details = useContext(User);
 
-const Nav = () => {
+    const auth = getAuth();
+    const handleLogout = () =>{
+      signOut(auth).then(() => {
+       localStorage.removeItem('Admin');
+       details.setUserData(null);
+       location.reload()
+      }).catch((error) => {
+        // An error occurred
+        alert('errror')
+      });
+    }
   return (
     <div className="nav" style={style.navStyle}>
         <h1>Ceshephard</h1>
+
+    {
+      logout && (
+        <button onClick={handleLogout}>Logout</button>
+      )
+    }
+            
+      
+        
     </div>
   )
 }

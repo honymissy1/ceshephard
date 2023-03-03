@@ -1,78 +1,108 @@
-import { Divider, Radio, Table, Button } from 'antd';
-import { useState } from 'react';
-import { DownloadOutlined,  } from '@ant-design/icons';
-
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: 'Cell',
-    dataIndex: 'cell',
-  },
-  {
-    title: 'Phone',
-    dataIndex: 'phone',
-    ellipsis: true,
-  },
-];
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    cell: 'Dunamis',
-    phone: +234813043033,
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    cell: 'Light',
-    phone: +23439490242,
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    cell: 'Light',
-    phone: +2343934843829,
-  },
-];
-
-const rowSelection = {
-   onChange: (selectedRowKeys, selectedRows) => {
-    selectedRows.map(ele =>{
-      console.log(ele.key);
-    })
-   },
-   getCheckboxProps: (record) => ({
-     name: record.name,
-   }),
- };
+import { Divider, Radio, Table, Space, notification } from 'antd';
+import { ArrowUpOutlined, DeleteOutlined, DeleteTwoTone, SearchOutlined} from '@ant-design/icons';
+import { useState,useEffect } from 'react';
+import { db } from '../../firebaseConfig';
+import { getDocs, collection, getDoc, setDoc, deleteDoc, doc } from 'firebase/firestore';
 
 
 const DeleteRequestPage = () =>{
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (text) => <a href={"tel:"+text}>{text}</a>,
+    },
+  
+    {
+      title: 'Action',
+      dataIndex: 'views',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          {/* <a>Invite {record}</a> */}
+          <i style={{color: 'green'}} ><ArrowUpOutlined onClick={() => handleRestore(record)} /></i>
+          <DeleteTwoTone  onClick={() => handleDelete(record)}  twoToneColor="#eb2f96" />
+        </Space>
+      ),
+    },
+  ];
+
+   
+  const sourceCollectionRef = collection(db, "deletedmember");
+  const targetCollectionRef = collection(db, "cellmembers");
+  
+  const onClose = () =>{
+    location.reload()
+  }
+
+  const [data, setData] = useState([]);
+  const handleRestore = async (x) =>{
+    const sourceDocRef = doc(sourceCollectionRef, x.key);
+    const sourceDocSnapshot = await getDoc(sourceDocRef);
+    const sourceDocData = sourceDocSnapshot.data();
+
+    const targetDocRef = doc(targetCollectionRef);
+    const deleteDocument = await setDoc(targetDocRef, sourceDocData);
+    
+    const deleteCol = await deleteDoc(sourceDocRef);
+
+    notification.open({
+      duration: 3,
+      message: 'Success',
+      description: 'Successfully re-added',
+      onClose: onClose,
+    });
+  }
+
+  const handleDelete = (x) =>{
+    const docRef = doc(db, "deletedmember", x.key);
+
+    deleteDoc(docRef)
+     .then(result =>{
+      notification.success({
+        message: 'Deleted',
+        duration: 3,
+        details: "Completely Deleted "+ x.name,
+      })
+      console.log(result);
+
+       location.reload()
+      
+     })
+
+  }
+  useEffect(() =>{
+    const fetchData = async () => {
+      const response = await getDocs(collection(db, 'deletedmember'));
+      const dataArray = response.docs.map((doc) => ({
+        key: doc.id,
+        name: doc.data().fullname,
+        phone: doc.data().phone,
+        role: doc.data().role,
+        // ...doc.data(),
+      }));
+      setData(dataArray);
+    };
+    fetchData();
+  }, [])
+
     return (
         <div>
-             <div className="headers">
-                <h1>Delete Request</h1>
-             </div>
-    <div>
-      <div style={{padding: '20px'}}>
-        <Table rowSelection={{ type: 'checkbox', ...rowSelection, }}
-        columns={columns}
-        dataSource={data}
-        />
+          <div className="headers"><h1>DELETED MEMBERS</h1></div>
+ 
+           <div style={{marginTop: '30px'}}>
+           <Table columns={columns} dataSource={data} />
+           </div>
+        </div>
 
-        <Button style={{marginTop: '15px'}} type="primary" icon={<DownloadOutlined />}>
-          Delete Member
-        </Button>
-      </div>
-
-      
-       </div>
-    </div>
-    )
+     )
 }
 
 

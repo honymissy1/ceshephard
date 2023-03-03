@@ -1,17 +1,27 @@
 
-import { Button, Input, Space, Table, Modal } from 'antd';
-import { DeleteOutlined, DeleteTwoTone, SearchOutlined} from '@ant-design/icons';
+import { Button, Input, Space, Table, Modal, Dropdown, notification } from 'antd';
+import { DeleteOutlined, DeleteTwoTone, SearchOutlined, EllipsisOutlined} from '@ant-design/icons';
 import CellImage from '../../assets/Images/cell.png';
 import {db} from '../../firebaseConfig';
-import { collection, getDocs } from "firebase/firestore"; 
-import { useEffect, useState } from 'react';
+import User from '../../context/userContext';
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, where, query } from "firebase/firestore"; 
+import { useEffect, useState, useContext } from 'react';
 
 
 const CellMembers = () =>{
+  const Userdetails = useContext(User);
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
+  const [cell, setCell] = useState('')
 
+  useEffect(() =>{
+   setCell(Userdetails?.data?.cell)
+  }, [])
+
+  const sourceCollectionRef = collection(db, "cellmembers");
+  const targetCollectionRef = collection(db, "deletedmember");
+  
   const columns = [
     {
       title: 'Name',
@@ -50,11 +60,33 @@ const CellMembers = () =>{
       render: (_, record) => (
         <Space size="middle">
           <a onClick={() => showModal(record)}>Edit</a>
-          <DeleteTwoTone onClick={() => alert('Deleted '+record.fullname)} twoToneColor="#eb2f96" />
+          <DeleteTwoTone onClick={() => handleDelete(record)} twoToneColor="#eb2f96" />
         </Space>
+
       ),
     },
   ];
+
+  const onClose = () =>{
+    location.reload()
+  }
+
+  const handleDelete = async (x) =>{
+    const sourceDocRef = doc(sourceCollectionRef, x.key);
+    const sourceDocSnapshot = await getDoc(sourceDocRef);
+    const sourceDocData = sourceDocSnapshot.data();
+
+    const targetDocRef = doc(targetCollectionRef);
+    const deleteDocument = await setDoc(targetDocRef, sourceDocData);
+    
+    await deleteDoc(sourceDocRef);
+    notification.open({
+      duration: 3,
+      message: 'Success',
+      description: 'Delete request successful',
+      onClose: onClose,
+    });
+  }
   
   const showModal = (data) => {
     setModalData(data);
@@ -63,7 +95,9 @@ const CellMembers = () =>{
   
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getDocs(collection(db, 'cellmembers'));
+      const q = query(collection(db, 'cellmembers'), where('cell', '==', Userdetails?.data?.cell === null ? '': Userdetails.data.cell));
+
+      const response = await getDocs(q);
       const dataArray = response.docs.map((doc) => ({
         key: doc.id,
         fullname: doc.data().fullname,
@@ -75,13 +109,14 @@ const CellMembers = () =>{
       setData(dataArray);
     };
     fetchData();
-  }, []);
+  }, [Userdetails]);
 
   const handleOk = () => {
     // Upadate Firebase Query :)
     setIsModalVisible(false);
   };
-  
+
+
     return (
          <div>
            {/* <div style={{width: '100%', height:'30vh', overflow:'hidden', margin: '10px auto'}}>

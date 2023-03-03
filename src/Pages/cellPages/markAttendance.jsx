@@ -62,7 +62,7 @@ const presentColumns = [
         render: (text, record) => {
           const isChecked = selectedRowKeys.includes(record.key);
           return isChecked ? (<i style={{fontSize: '20px'}}><CheckCircleTwoTone /></i>) :(
-            <h3>Absent</h3>
+            <p style={{color: 'red', fontWeight: '700'}}>Absent</p>
           );
         },
     },
@@ -228,23 +228,19 @@ const presentColumns = [
          if (obj.date === date && obj.meeting === e.target.textContent && obj.present === false) {
           meetingObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone});
          }else if(obj.date === date && obj.meeting === e.target.textContent && obj.present === false){
-          absentObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone});   
+           absentObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone});   
          }
 
       });
       });
 
-    setMeetingData(meetingObj);
-    setAbsentData(absentObj)
-    
-
+      setAbsentData(meetingObj);
+      setMeetingData(meetingObj);
   }
 
-  const meetingSubmit = () =>{
+  const meetingSubmit = () =>{}
 
-  }
-
-
+console.log(absentData);
     return (
         <div>
            <div className="headers"><h1>Mark Attendance</h1></div>
@@ -287,20 +283,32 @@ const presentColumns = [
                  
                   <Tabs defaultActiveKey="1">
                       <TabPane tab="Attendance" key="1">
-                        <Table columns={presentColumns} dataSource={data}  rowSelection={{
-                          type: 'checkbox',
-                          onChange: handleRowSelection, selectedRowKeys,
-                        }} />
-                        <Button onClick={handlePresent} type="primary">
-                          Submit
-                        </Button>
+                        {
+                          meetingData.length > 0 ? (
+                       <>
+                          <Table columns={presentColumns} dataSource={data}  rowSelection={{
+                            type: 'checkbox',
+                            onChange: handleRowSelection, selectedRowKeys,
+                          }} />
+                          <Button onClick={handlePresent} type="primary">
+                            Submit
+                          </Button>
+                          </>
+                          ) :(
+                            'Nothing to Mark Select Valid Date'
+                          )
+                        }
                       </TabPane>
 
                       <TabPane tab="Absentees" key="2">
                        <Table columns={Columns} dataSource={absentData}  />
-                       <Button type="primary" onClick={meetingSubmit}>
+                       {
+                        absentData.length > 0 && (
+                        <Button type="primary" onClick={meetingSubmit}>
                           Submit
                         </Button>
+                        )
+                       }
                       </TabPane>
                   </Tabs>
                 </Card>

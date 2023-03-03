@@ -9,7 +9,7 @@ const UserProvider = ({children}) =>{
   useEffect(() =>{
     const localUser = JSON.parse(localStorage.getItem('ceshepharduser'));
 
-    if(localUser){
+    if(localUser !== null){
        setData({
         name: localUser.name,
         email: localUser.email,

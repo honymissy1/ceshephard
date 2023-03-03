@@ -9,6 +9,8 @@ import { collection, addDoc } from "firebase/firestore";
 
 export const AddMember = () =>{
   const Userdetails = useContext(User);
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('')
 
   const [role, setRole] = useState('');
   const nameRef = useRef();
@@ -22,8 +24,9 @@ export const AddMember = () =>{
    const addUser = async () =>{
     const docRef = await addDoc(collection(db, 'cellmembers'), {
       fullname: nameRef.current.input.value,
-      phone: phoneRef.current.input.value,
+      phone: phone,
       role: role,
+      email: email,
       cell: Userdetails.data.cell,
       address: addressRef.current.input.value,
       meetings: [],
@@ -44,7 +47,8 @@ export const AddMember = () =>{
            type="inner" title="Create a user">
              <form action="" className='create-user'>
                 <Input placeholder="Full Name" ref={nameRef} />
-                <Input placeholder="Phone" ref={phoneRef} />
+                <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
                 <Select
                 ref={roleRef}

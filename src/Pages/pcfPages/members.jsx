@@ -1,5 +1,5 @@
 
-import { Button, Input, Space, Table, Modal } from 'antd';
+import { Button, Input, Space, Table, Modal , Form } from 'antd';
 import { DeleteOutlined, DeleteTwoTone, SearchOutlined} from '@ant-design/icons';
 import CellImage from '../../assets/Images/cell.png';
 import {db} from '../../firebaseConfig';
@@ -13,6 +13,34 @@ const columns = [
     dataIndex: 'fullname',
     key: 'fullname',
     render: (text) => <a>{text}</a>,
+    filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => (
+      
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder="Search name"
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={confirm}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={confirm}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    onFilter: (value, record) =>
+      record.fullname.toLowerCase().includes(value.toLowerCase()),
   },
   {
     title: 'Phone',
@@ -23,13 +51,40 @@ const columns = [
   },
 
   {
-   title: 'Role',
-   dataIndex: 'role',
-   key: 'role',
-   // ellipsis: true,
-   render: (text) => <p style={{color: 'red'}}>{text}</p>
+   title: 'Cell',
+   dataIndex: 'cell',
+   key: 'cell',
+   ellipsis: true,
+   render: (text) => <p style={{color: 'red'}}>{text}</p>,
+   filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => (
+   <div style={{ padding: 8 }}>
+      <Input
+        placeholder="Search name"
+        onChange={(e) =>
+          setSelectedKeys(e.target.value ? [e.target.value] : [])
+        }
+        onPressEnter={confirm}
+        style={{ width: 188, marginBottom: 8, display: 'block' }}
+      />
+      <Space>
+        <Button
+          type="primary"
+          onClick={confirm}
+          size="small"
+          style={{ width: 90 }}
+        >
+          Search
+        </Button>
+        <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
+          Reset
+        </Button>
+      </Space>
+    </div>
+  ),
+  onFilter: (value, record) =>
+    record.cell.toLowerCase().includes(value.toLowerCase()),
+},
 
- },
   {
     title: 'Address',
     dataIndex: 'address',
@@ -68,7 +123,7 @@ const Members = () =>{
         key: doc.id,
         fullname: doc.data().fullname,
         phone: doc.data().phone,
-        role: doc.data().role,
+        cell: doc.data().cell,
         address: doc.data().address
       }));
       setData(dataArray);

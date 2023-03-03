@@ -18,13 +18,10 @@ const CellPage = ({access}) => {
     <>
      <Nav />
      <Layout>
-         { !userdetails.data && (
+         { userdetails.data !== null && (
        <Sider breakpoint="md" collapsedWidth="0">
          <div className="logo" />
-            <Menu
-            style={{
-              minHeight: '100vh'
-            }}
+            <Menu style={{minHeight: '100vh'}}
               theme="dark"
               mode="inline"
               items={[UploadOutlined, PlusSquareOutlined, UserOutlined, DeleteOutlined].map(
@@ -39,7 +36,7 @@ const CellPage = ({access}) => {
        </Sider>
          )}
        <Layout>
-          <Content  style={{  margin: '0'}}>
+          <Content style={{  margin: '0'}}>
             
            {
              access ? (<Outlet />) : (<Navigate to="unauth" replace={false} />)
