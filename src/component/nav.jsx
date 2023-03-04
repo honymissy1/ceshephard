@@ -1,6 +1,7 @@
 import User from "../context/userContext";
 import { useContext } from "react";
 import { getAuth, signOut } from "firebase/auth";
+import Admin from "../context/admin";
 
 const style = {
   navStyle: {
@@ -13,11 +14,14 @@ const style = {
 
 const Nav = ({logout}) => {
   const details = useContext(User);
+  const admin = useContext(Admin)
 
     const auth = getAuth();
     const handleLogout = () =>{
       signOut(auth).then(() => {
        localStorage.removeItem('Admin');
+       localStorage.removeItem('ceshepharduser');
+       details.setUserData(null);
        details.setUserData(null);
        location.reload()
       }).catch((error) => {

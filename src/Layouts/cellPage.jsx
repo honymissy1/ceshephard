@@ -4,19 +4,26 @@ import React, {useContext} from 'react';
 import User from '../context/userContext';
 import { Outlet, NavLink, Navigate } from 'react-router-dom';
 import Nav from '../component/nav';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 const { Content, Footer, Sider } = Layout;
 
 
 const CellPage = ({access}) => {
-  const userdetails = useContext(User)
+  const userdetails = useContext(User);
+  const [login, setLogin] = useState(false)
   const { token: { colorBgContainer },} = theme.useToken();
   const pages = ['Mark Attendance', 'Add Cell Members', 'Cell Members', 'Delete'];
   const link = ['', 'addmember', 'cellmembers', 'delete']
 
+  useEffect(() =>{
+    if(userdetails.data !== null){
+     setLogin(true)
+    }
+   }, [userdetails])
+   
   return (
     <>
-     <Nav />
+     <Nav logout={login} />
      <Layout>
          { userdetails.data !== null && (
        <Sider breakpoint="md" collapsedWidth="0">

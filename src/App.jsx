@@ -28,26 +28,24 @@ import Admin from "./context/admin";
 const App =() => {
   const userdetails = useContext(User);
   const AdminDetails = useContext(Admin)
-  const navigate = useNavigate();
-
-  console.log(AdminDetails.data);
+  
   return (
     <Routes>
-      <Route path="/" element={<CellPage access={true} />}>
-        <Route path="login" element={<Login />} />
-        <Route path="" element={userdetails.data !== null ? (<MarkAttendance />): (<Navigate to="/login" replace={true} />)} />
-        <Route path="addMember" element={<AddCellMembers />} />
-        <Route path="cellmembers" element={<CellMember />} />
-        <Route path="delete" element={<DeleteRequest />} />
+      <Route path="/" element={<CellPage  access={true}/>}>
+        <Route path="login" element={userdetails.data === null ? (<Login />): (<Navigate to="/" replace={true} />)} />
+        <Route path="" element={userdetails.data === null ? (<Navigate to="/login" replace={true} />): (<MarkAttendance />)} />
+        <Route path="addMember" element={userdetails.data === null ? (<Navigate to="/login" replace={true} />): (<AddCellMembers />)} />
+        <Route path="cellmembers" element={userdetails.data === null ? (<Navigate to="/login" replace={true} />): (<CellMember />)} />
+        <Route path="delete" element={userdetails.data === null ? (<Navigate to="/login" replace={true} />): (<DeleteRequest />)} />
       </Route>
 
       <Route path="/pcf" element={<PcfPage />}>
         <Route path="" element={AdminDetails.data !== null ? (<CreateMeeting />): (<Navigate to="/pcf/login"/>)} />
-        <Route path="deleterequest" element={<DeleteRequestPage />} />
-        <Route path="members" element={<Members />} />
-        <Route path="addmember" element={<AddMember />} />
-        <Route path="createadmin" element={<CreateAdmin />} />
-        <Route path="attendance" element={<Attendance />} />
+        <Route path="deleterequest" element={AdminDetails.data !== null ? (<DeleteRequestPage />): (<Navigate to="/pcf/login"/>)} />
+        <Route path="members" element={AdminDetails.data !== null ? (<Members />): (<Navigate to="/pcf/login"/>)} />
+        <Route path="addmember" element={AdminDetails.data !== null ?(<AddMember />):  (<Navigate to="/pcf/login"/>)} />
+        <Route path="createadmin" element={AdminDetails.data !== null ?(<CreateAdmin />):  (<Navigate to="/pcf/login"/>)} />
+        <Route path="attendance" element={AdminDetails.data !== null ?(<Attendance />):  (<Navigate to="/pcf/login"/>)} />
         <Route path="login" element={AdminDetails.data === null ? (<PcfLogin />): (<Navigate to="/pcf"/>)} />
       </Route>
 

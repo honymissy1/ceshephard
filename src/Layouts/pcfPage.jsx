@@ -7,6 +7,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 import Nav from '../component/nav';
 import Admin from '../context/admin';
 const { Content, Footer, Sider } = Layout;
+
 const PcfPage = () => {
   const Admindetails = useContext(Admin)
   const [login, setLogin] = useState(false)
@@ -26,7 +27,8 @@ const PcfPage = () => {
     <Nav logout={login} />
     <Layout>
     {
-      login && (      <Sider breakpoint="md" collapsedWidth="0">
+      login && (
+      <Sider breakpoint="md" collapsedWidth="0">
         <div className="logo" />
         <Menu
          style={{

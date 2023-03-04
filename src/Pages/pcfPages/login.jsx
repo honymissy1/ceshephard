@@ -33,9 +33,9 @@ const PcfLogin = () =>{
     }
     return (
         <div className='login-container'>
-            <div style={{}} className="overlay"></div>
+            <div className="overlay"></div>
             <div className='login-banner'>
-                <img src={Image} alt="" style={{width: "100%"}} />
+                <img src={Image} alt="" />
             </div>
             <div className='login-content'>
                 <h1 style={{textAlign: 'center', padding:"30px", color: 'rgb(228, 221, 221)', fontWeight: 700}}>PCF LOGIN</h1>

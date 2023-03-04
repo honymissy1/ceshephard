@@ -44,11 +44,12 @@ const Login = () =>{
     }
     return (
         <div className='login-container'>
+            <div className="overlay"></div>
             <div className='login-banner'>
-                <img src={Image} alt="" style={{width: "100%"}} />
+                <img src={Image} alt=""  />
             </div>
             <div className='login-content'>
-                <h1 style={{textAlign: 'center', padding:"30px"}}>Login Page</h1>
+                <h1 style={{textAlign: 'center', padding:"30px", color: 'white'}}>Login Page</h1>
 
                 <Form action="" className="login-form">
                         <div style={{padding: '10px'}}>
