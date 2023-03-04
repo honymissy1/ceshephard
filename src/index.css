@@ -2,19 +2,21 @@
 *{
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
 }
 
 body{
-  font-family: 'Ubuntu', sans-serif;;
+  font-family: 'Ubuntu', sans-serif;
+  overflow-x: hidden;
 }
 
 .nav{
-  box-shadow: 1px 1px 5px green;
   display: flex;
+  width: 100vw;
   justify-content: space-between;
   align-items: center;
   /* background-color: red; */
-
+  padding: 20px;
 }
 
 .nav button{
@@ -64,8 +66,8 @@ body{
 .login-form{
   max-width: 400px;
   margin: 0px auto;
-
-  width: 100%;
+  padding: 0px;
+  width: 100vw;
 
 }
 
@@ -81,11 +83,10 @@ body{
 }
 
 .login-banner{
-  width: 300px; 
+  width: 100%; 
   height: 100vh; 
   background: #4B52DB;
-  flex: 1;
-  /* border: 3px solid black; */
+ 
   min-width: 300px;
   overflow: hidden;
 
@@ -99,7 +100,7 @@ body{
 .login-content{
   flex: 1;
   /* border: 1px solid; */
-  min-width: 400px
+  min-width: 300px
 }
 
 .overlay{
@@ -118,7 +119,7 @@ body{
   }
   .login-content{
     position: absolute;
-    padding: 20px;
+    padding: 0px;
   }
 
   .login-form div label{
@@ -130,16 +131,17 @@ body{
   .overlay {
     display: block;
     position: absolute;
-    width: 100%;
+    left:0; 
+    width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.701);
   }
 
   .login-banner{
-    width: 100%
+    width: 100vw
   }
   .login-banner img{
-    height: 100%;
+    /* height: 100%; */
     width: 100%
   }
 }

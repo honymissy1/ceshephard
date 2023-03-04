@@ -3,14 +3,15 @@ import { useContext } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import Admin from "../context/admin";
 
-const style = {
-  navStyle: {
-    padding: '20px',
-    boxShadow: '.5px .5px 10px black',
-    borderBottom: '1px solid black',
-    fontFamily: 'Ubuntu'
-  }
-}
+// const style = {
+//   navStyle: {
+//     padding: '20px',
+//     boxShadow: '.5px .5px 10px black',
+//     borderBottom: '1px solid black',
+//     fontFamily: 'Ubuntu',
+//     width: '100%'
+//   }
+// }
 
 const Nav = ({logout}) => {
   const details = useContext(User);
@@ -30,7 +31,7 @@ const Nav = ({logout}) => {
       });
     }
   return (
-    <div className="nav" style={style.navStyle}>
+    <div className="nav">
         <h1>Ceshephard</h1>
 
     {
