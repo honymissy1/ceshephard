@@ -23,7 +23,7 @@ const Nav = ({logout}) => {
        localStorage.removeItem('Admin');
        localStorage.removeItem('ceshepharduser');
        details.setUserData(null);
-       details.setUserData(null);
+       admin.setUserData(null);
        location.reload()
       }).catch((error) => {
         // An error occurred

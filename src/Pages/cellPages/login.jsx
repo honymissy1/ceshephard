@@ -1,4 +1,4 @@
-import { Form,  Button, Input} from 'antd';
+import { Form,  Button, Input, notification} from 'antd';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, useContext } from 'react';
 import {db} from '../../firebaseConfig';
@@ -14,6 +14,20 @@ const Login = () =>{
     console.log(userdetails);
 
     const handleSubmit = async () => {
+        // try {
+        //     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        //     const user = userCredential.user;
+
+        //     console.log(user.email);
+              
+        //     userdetails.setUserData(user.email);
+        //     localStorage.setItem('Admin', JSON.stringify(user.email)) 
+
+              
+        //     // Here we will add a user to the database with the email
+
+        //     console.log(user); // User object containing information about the signed-in user
+        //   } 
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
@@ -39,6 +53,12 @@ const Login = () =>{
 
             console.log(user); // User object containing information about the signed-in user
           } catch (error) {
+            notification.error({
+                message: 'Error',
+                description: error.message.split(':')[1],
+                duration: 3
+
+            })
             console.log(error.message); // Error object containing information about the error
           }
     }

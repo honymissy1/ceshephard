@@ -34,6 +34,7 @@ const CreateAdmin = () =>{
                 fullname: name,
                 phone: phone,
                 role: 'Cell Admin',
+                email: email,
                 cell: cell,
                 address: '',
                 meetings: [],

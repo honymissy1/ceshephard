@@ -43,7 +43,7 @@ const AddMember = () =>{
     
           notification.success({
             message: "Success",
-            description: "Admin successfully added for "+ cell,
+            description: "Member successfully added for "+ cell,
             icon: (
                 <SmileOutlined
                   style={{ color: '#108ee9' }}

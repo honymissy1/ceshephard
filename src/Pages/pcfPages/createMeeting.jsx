@@ -79,7 +79,7 @@ const CreateMeeting = () =>{
             <div style={{display: 'flex',  gap: '15px'}}>
 
             <Select
-                defaultValue="Sunday Service"
+                defaultValue="Select Meeting"
                 style={{
                     flex: 1,
                 }}

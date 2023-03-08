@@ -1,4 +1,4 @@
-import { Form,  Button, Input} from 'antd';
+import { Form,  Button, Input, notification} from 'antd';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, useContext } from 'react';
 import {db} from '../../firebaseConfig';
@@ -10,6 +10,7 @@ const PcfLogin = () =>{
     const auth = getAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('')
 
     console.log(userdetails);
 
@@ -28,6 +29,13 @@ const PcfLogin = () =>{
 
             console.log(user); // User object containing information about the signed-in user
           } catch (error) {
+            notification.error({
+                message: 'Error',
+                description: error.message.split(':')[1],
+                duration: 3
+
+            })
+            setError(error.message)
             console.log(error.message); // Error object containing information about the error
           }
     }

@@ -1,11 +1,12 @@
 import {   Button, Card, message, Tabs, DatePicker, Table, Select, Space, Dropdown, Menu } from 'antd';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { db } from '../../firebaseConfig';
 import { DeleteTwoTone, DownOutlined, CheckCircleTwoTone  } from '@ant-design/icons';
 import { collection, doc, query, where, getDocs, updateDoc, collectionGroup, writeBatch, getDoc} from 'firebase/firestore';
-
+import User from '../../context/userContext';
 
 const MarkAttendance = () =>{
+  const userdetails = useContext(User);
   const { TabPane } = Tabs;
   const [meetingList, setMeetingList] = useState([])
    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -13,6 +14,7 @@ const MarkAttendance = () =>{
    const [checked, setChecked] = useState(false);
    const [meetingTitle, setMeetingTitle] = useState('')
    const [absentData, setAbsentData] = useState([])
+   const [absentUpdate, setAbsentUpdate] = useState([])
    const items = [
     {
       label: <p>Job</p>,
@@ -91,43 +93,50 @@ const presentColumns = [
        dataIndex: 'status',
        key: 'status',
        render: (text, record) => {
+        console.log(record);
          const isChecked = selectedRowKeys.includes(record.key);
          return isChecked ? (<i style={{fontSize: '20px'}}><CheckCircleTwoTone /></i>) :(
           <Select
-          defaultValue="Travelled"
-          style={{
-            width: 120,
-          }}
-          // onChange={handleChange}
-          options={[
-            {
-              value: 'Travelled',
-              label: 'Travelled',
-            },
-            {
-              value: 'Sick',
-              label: 'Sick',
-            },
-            {
-              value: 'Job/Work',
-              label: 'Job/Work',
-            },
-            {
-              value: 'School',
-              label: 'School',
-            },
+            style={{
+              width: '100%',
+            }}
 
-            {
-              value: 'Unknown',
-              label: 'Unknown',
-            },
-          ]}
-        />
+          defaultValue={record.reason} onChange={(value) => handleSelectChange(value, record.key)}>
+            <Select.Option value="Travel">Travel</Select.Option>
+            <Select.Option value="Work">Work</Select.Option>
+            <Select.Option value="School">School</Select.Option>
+            <Select.Option value="Unknown">Unknown</Select.Option>
+          </Select>
          );
        },
    },
  
 ];
+
+
+const updateArray = [];
+
+const handleSelectChange = (value,id) =>{
+   
+const newObject = {id: id, value: value};
+
+let foundMatch = false;
+
+for (let i = 0; i < updateArray.length; i++) {
+  if (updateArray[i].id === newObject.id) {
+    updateArray[i].value = newObject.value;
+    foundMatch = true;
+    break;
+  }
+}
+
+if (!foundMatch) {
+  updateArray.push(newObject);
+}
+
+console.log(updateArray);
+//  setAbsentUpdate()
+}
 
 
  const handleRowSelection = (selectedRowKeys, selectedRows) => {
@@ -148,7 +157,7 @@ const presentColumns = [
    const meetings = [];
 
    const handleClick = async () =>{
-      const q = query(collection(db, 'cellmembers'), where('cell', '==', 'Dunamis'));
+      const q = query(collection(db, 'cellmembers'), where('cell', '==', userdetails.data.cell));
       const querySnapshot = await getDocs(q);
 
       const matchingObjects = [];
@@ -199,7 +208,7 @@ const presentColumns = [
           if (docSnapshot.exists()) {
             const data = docSnapshot.data();
             const newArray = data.meetings.map(obj => {
-              if (data.cell === "Dunamis" && obj.meeting === meetingTitle && obj.date === date) {
+              if (data.cell === userdetails.data.cell && obj.meeting === meetingTitle && obj.date === date) {
                 message.success('Successfully marked '+data.fullname, 2);
                 return { ...obj, present: true };
               }
@@ -218,7 +227,7 @@ const presentColumns = [
    let absentObj = [];
    const handleMeeting = async(e) =>{
     setMeetingTitle(e.target.textContent)
-    const q = query(collection(db, 'cellmembers'), where('cell', '==', 'Dunamis'));
+    const q = query(collection(db, 'cellmembers'), where('cell', '==', userdetails.data.cell));
     const querySnapshot = await getDocs(q);
 
 
@@ -226,9 +235,9 @@ const presentColumns = [
       const myArray = doc.data().meetings;
       myArray.forEach((obj) => {
          if (obj.date === date && obj.meeting === e.target.textContent && obj.present === false) {
-          meetingObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone});
+          meetingObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone, reason: obj.reason});
          }else if(obj.date === date && obj.meeting === e.target.textContent && obj.present === false){
-           absentObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone});   
+           absentObj.push({ fullname: doc.data().fullname, key: doc.id, phone: doc.data().phone, reason: obj.reason});   
          }
 
       });
@@ -238,9 +247,32 @@ const presentColumns = [
       setMeetingData(meetingObj);
   }
 
-  const meetingSubmit = () =>{}
+  const meetingSubmit = async () =>{
+    console.log(updateArray);
 
-console.log(absentData);
+    for (const documentId of updateArray) {
+
+      const docRef = doc(db, "cellmembers", documentId.id);
+       const docSnapshot = await getDoc(docRef);
+
+       if (docSnapshot.exists()) {
+         const data = docSnapshot.data();
+         const newArray = data.meetings.map(obj => {
+           if (data.cell === userdetails.data.cell && obj.meeting === meetingTitle && obj.date === date) {
+             message.success('Successfully sent '+data.fullname, 2);
+             return { ...obj, reason: documentId.value };
+           }
+            return obj;
+         });
+
+         await updateDoc(docRef, { meetings: newArray });
+        }
+
+       }
+
+       location.reload()
+  }
+
     return (
         <div>
            <div className="headers"><h1>Mark Attendance</h1></div>

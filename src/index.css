@@ -86,7 +86,7 @@ body{
   width: 100%; 
   height: 100vh; 
   background: #4B52DB;
- 
+  flex: 1;
   min-width: 300px;
   overflow: hidden;
 

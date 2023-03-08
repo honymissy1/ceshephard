@@ -6,28 +6,99 @@ import { collection, getDocs } from 'firebase/firestore';
 import { DownloadOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 
-
 const Attendance = () =>{
+    // const client = new Twilio('AC72f700054167c8103c03a4176d2d4846', 'b6b82112ce2089526fee6ae83a7525ad');
 
     const [date, setDate] = useState('');
     const [meetingList, setMeetingList] = useState([]);
     const [meetingTitle, setMeetingTitle] = useState('');
     const [tableData, setTableData] = useState([])
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const { TextArea } = Input;
     
 
     // Modal
-
+    const noPresent = tableData.filter(ele => ele.status === false)
+    const present = tableData.filter(ele => ele.status === true)
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen2, setIsModalOpen2] = useState(false);
     const showModal = () => {
       setIsModalOpen(true);
     };
-    const handleOk = () => {
+
+    const showModalPresent = () =>{
+      setIsModalOpen2(true);
+    }
+
+    const handleInputChange = (e) => {
+      setMessage(e.target.value);
+    };
+
+    const handleOk = async () => {
+    noPresent.forEach(async (ele) =>{
+      const fetchData = await fetch(`http://localhost:3000/`, {
+        method: 'post',
+        headers: {
+          'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify({
+          phone: ele.phone,
+          message: message
+        })
+      });
+      const result = await fetchData.text();
+  
+      console.log(result);
+
+    })
+
+      // twillio request.............for absentees
+      // noPresent.forEach((ele) =>{
+      // client.messages.create({
+      //   from: 'whatsapp:+15673721021',
+      //   body: message,
+      //   to: `whatsapp:${ele.phone}`
+      // })
+      // .then(message => console.log(`WhatsApp message sent. SID: ${message.sid}`))
+      // .catch(error => console.error(`Error sending WhatsApp message: ${error}`));
+      // })
+      //Send Back end request
+      // console.log(noPresent);
+      // console.log(message);
       setIsModalOpen(false);
     };
+
+    const handleOk2 = () =>{
+
+    present.forEach(async (ele) =>{
+      const fetchData = await fetch(`http://localhost:3000/`, {
+        method: 'post',
+        headers: {
+          'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify({
+          phone: ele.phone,
+          message: message
+        })
+      });
+      const result = await fetchData.text();
+  
+      console.log(result);
+
+    })
+      //twilio request for present
+      console.log(message);
+      setIsModalOpen(false);
+
+    }
+
     const handleCancel = () => {
       setIsModalOpen(false);
+    };
+
+    const handleCancel2 = () => {
+      setIsModalOpen2(false);
     };
     const meetings = []
     const handleClick = async () =>{
@@ -109,7 +180,7 @@ const Attendance = () =>{
  
       }
 
-      console.log(tableData);
+ 
 
       const columns = [
         {
@@ -198,8 +269,6 @@ const Attendance = () =>{
         
       ];
 
-     console.log(meetingList);
-
     //  const handleAction = () =>{
 
     //  }
@@ -238,8 +307,10 @@ const Attendance = () =>{
             <div style={{width: '100%'}}>
               <h2 style={{textAlign: 'center', color:'green'}}>{meetingTitle}</h2>
                  <Table onClick={() => alert('Boomm')} dataSource={tableData} columns={columns} />
-                 <Button onClick={showModal} style={{margin: '10px', border: '1px solid'}} type={'primary'}>Action</Button>
-                 <Modal title="Action" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                 <Button onClick={showModal} style={{margin: '10px', border: '1px solid'}} type={'primary'}>Send to Absentees</Button>
+                 <Button onClick={showModalPresent} style={{margin: '10px', border: '1px solid'}} type={'primary'}>Present Members </Button>
+
+                 <Modal title="Action" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
                      <h3 style={{color:'green'}}>Send whatsapp message</h3>
                      
                         <TextArea
@@ -248,6 +319,24 @@ const Attendance = () =>{
                             resize: 'none',
                             marginBottom: '20px'
                         }}
+
+                        value={message}
+                        onChange={handleInputChange} 
+                        />
+
+                </Modal>
+
+                <Modal title="Absent" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                     <h3 style={{color:'red'}}>Send whatsapp message</h3>
+                     
+                        <TextArea
+                        style={{
+                            height: 120,
+                            resize: 'none',
+                            marginBottom: '20px'
+                        }}
+
+                        onChange={handleInputChange} 
                         />
 
                 </Modal>
