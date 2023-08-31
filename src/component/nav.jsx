@@ -32,16 +32,13 @@ const Nav = ({logout}) => {
     }
   return (
     <div className="nav">
-        <h1>Ceshephard</h1>
+        <h1>Ceshepherd</h1>
 
     {
       logout && (
         <button onClick={handleLogout}>Logout</button>
       )
-    }
-            
-      
-        
+    }  
     </div>
   )
 }

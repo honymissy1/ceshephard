@@ -24,7 +24,6 @@ const CreateMeeting = () =>{
       const handleSubmit = async () =>{
         const querySnapshot = await getDocs(collection(db, 'cellmembers'));
 
-        console.log(querySnapshot);
         if(!querySnapshot.empty){
           notification.success({
             message: "Success",
@@ -57,7 +56,10 @@ const CreateMeeting = () =>{
             detail: detail
           })}, { merge: true })
             .then(() => {               
-              console.log(`Successfully updated document ${docRef.id}`);
+              // console.log(`Successfully updated document ${docRef.id}`);
+              setMeeting('');
+              setDate('');
+              setDetails('')
             })
             .catch((error) => {
               console.error(`Error updating document ${docRef.id}:`, error);

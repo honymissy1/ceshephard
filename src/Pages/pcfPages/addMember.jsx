@@ -4,17 +4,21 @@ import { DownloadOutlined, SmileOutlined, FrownOutlined  } from '@ant-design/ico
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from '../../firebaseConfig';
 import { collection, addDoc  } from 'firebase/firestore';
+import GOC from '../../assets/data/goc.json'
 
 const AddMember = () =>{
 
     const [api, contextHolder] = notification.useNotification();
+    const gocs = Array.from({ length: 30 }, (_, index) => (index + 1).toString());
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [cell, setCell] = useState('');
     const [address, setAddress] = useState('');
-    const [role, setRole] = useState('')
+    const [role, setRole] = useState('');
+    const [group, setGroup] = useState('');
+    const [data, setData] = useState([])
 
     const auth = getAuth();
 
@@ -24,7 +28,20 @@ const AddMember = () =>{
 
       const handleRoleChange = (value) =>{
         console.log(value);
-        setRole(value)
+        setRole(value);
+
+        console.log(gocs);
+      }
+
+      const handleGroupChange = (value) =>{
+        setGroup(value);
+
+        const data = GOC.find(ele =>{
+          return ele.id === value
+        });
+
+        setData(data.cells)
+        console.log(data.cells);
       }
 
     const handleSubmit = async() =>{
@@ -35,6 +52,7 @@ const AddMember = () =>{
             role: role,
             email: email,
             cell: cell,
+            goc: 'Goc'+group,
             address: address,
             meetings: [],
             cellmeeting: []
@@ -43,26 +61,24 @@ const AddMember = () =>{
     
           notification.success({
             message: "Success",
-            description: "Member successfully added for "+ cell,
+            description: "Member successfully added for "+ cell + ' and ' + group,
             icon: (
                 <SmileOutlined
                   style={{ color: '#108ee9' }}
                 />
               ),
-        });
+           });
 
         setName('');
         setEmail('');
         setPhone('');
         setCell('');  
         setRole('');
+        setGroup('');
         setAddress('')
       }catch(err){
         console.log(err);
-      }
-
-          
-         
+      }  
  
     }
 
@@ -78,40 +94,39 @@ const AddMember = () =>{
                     <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                     
-                    <Select
 
-                defaultValue="Cell"
+                    <Select
+                    placeholder="GOC"
                     style={{
                         flex: 1,
                         width: '100%',
                         marginBottom: '10px'
                     }}
 
-                    options={[
-                        {
-                        value: 'Dunamis',
-                        label: 'Dunamis',
-                        },
-                        {
-                        value: 'Light Cell',
-                        label: 'Light Cell',
-                        },
-                        {
-                        value: 'Delight Cell',
-                        label: 'Delight Cell',
-                        }, 
-                        {
-                            value: 'Global Epignosis',
-                            label: 'Global Epignosis',
-                        }
-                    ]}
+                    options={gocs.map((ele, index) =>({label: 'GOC'+(index +1), value: parseInt(ele)}))}
 
-                onChange={handleCellChange}
+                    onChange={handleGroupChange}
+                    />
+
+                    <Select
+
+                    defaultValue={data[0]}
+                    placeholder="Cell"
+                    style={{
+                        flex: 1,
+                        width: '100%',
+                        marginBottom: '10px'
+                    }}
+
+                    options={data.map(ele => ({value: ele, label: ele}))}
+
+                    onChange={handleCellChange}
                 />
 
-                <Select
 
-                defaultValue="Role"
+                <Select
+                  placeholder="Role"
+                defaultValue="Member"
                 style={{
                     flex: 1,
                     width: '100%',
@@ -139,6 +154,8 @@ const AddMember = () =>{
 
                 onChange={handleRoleChange}
                 />
+
+
 
                 <Input placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
 

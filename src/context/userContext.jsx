@@ -13,17 +13,14 @@ const UserProvider = ({children}) =>{
        setData({
         name: localUser.name,
         email: localUser.email,
-        cell: localUser.cell
+        cell: localUser.cell,
+        goc: localUser.goc
       })
     }
   }, [])
 
-  const setUserData = (name, email, cell) =>{
-     setData({
-      name: name,
-      email: email,
-      cell: cell
-     })
+  const setUserData = (name, email, cell, goc) =>{
+     setData({ name, email, cell, goc })
   }
 
   return(

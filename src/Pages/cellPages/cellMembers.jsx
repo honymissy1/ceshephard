@@ -136,9 +136,6 @@ const CellMembers = () =>{
 
                     <label>Phone</label>
                     <Input  value={modalData.phone} />
-                    {/* <p>Field 1: {modalData.fullname}</p>
-                    <p>Field 2: {modalData.role}</p> */}
-                    {/* Add more fields as needed */}
                   </div>
                 )}
             </Modal>

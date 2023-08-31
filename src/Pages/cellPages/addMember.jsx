@@ -10,7 +10,8 @@ import { collection, addDoc } from "firebase/firestore";
 export const AddMember = () =>{
   const Userdetails = useContext(User);
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('');
+  const [group, setGroup] = useState('')
 
   const [role, setRole] = useState('');
   const nameRef = useRef();
@@ -28,9 +29,12 @@ export const AddMember = () =>{
       role: role,
       email: email,
       cell: Userdetails.data.cell,
+      goc: Userdetails.data.goc,
       address: addressRef.current.input.value,
       meetings: [],
       cellmeeting: []
+    }).then(ele =>{
+      console.log('Successful');
     })
    }
 
@@ -44,12 +48,12 @@ export const AddMember = () =>{
             }}
 
             className="add-member-form"
-           type="inner" title="Create a user">
+           type="inner" title="Add a Member">
              <form action="" className='create-user'>
                 <Input placeholder="Full Name" ref={nameRef} />
                 <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-
+                {/* <Input disabled value={Userdetails?.data?.goc} ref={addressRef} /> */}
                 <Select
                 ref={roleRef}
                 defaultValue="Choose Role"
@@ -67,16 +71,13 @@ export const AddMember = () =>{
                     {
                     value: 'Bibe Study Class',
                     label: 'Bibe Study Class',
-                    },
-                    {
-                    value: 'Cell Leader',
-                    label: 'Cell Leader',
                     }
                 ]}
 
                 onChange={handleRoleChange}
                 />
-                <Input disabled value={Userdetails?.data?.cell} ref={addressRef} />
+
+                {/* <Input disabled value={Userdetails?.data?.cell} ref={addressRef} /> */}
                 <Input placeholder="Address" ref={addressRef} />
 
                 <Button onClick={addUser} style={{color: 'white',background: 'rgb(0,21,41)'}}>Add</Button>

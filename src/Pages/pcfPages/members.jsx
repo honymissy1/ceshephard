@@ -1,10 +1,11 @@
 
-import { Button, Input, Space, Table, Modal , Form,  } from 'antd';
+import { Button, Input, Space, Table, Modal , Form, notification,  } from 'antd';
 import { DeleteOutlined, DeleteTwoTone, SearchOutlined, PhoneTwoTone} from '@ant-design/icons';
 import CellImage from '../../assets/Images/cell.png';
 import {db} from '../../firebaseConfig';
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
+import { collection, getDocs, doc, updateDoc, addDoc } from "firebase/firestore"; 
 import { useEffect, useState } from 'react';
+import JSON from '../../assets/data/csvjson.json'
 
 const Members = () =>{
   const columns = [
@@ -107,9 +108,13 @@ const Members = () =>{
     },
   ];
 
+  const [id, setId] = useState('')
+
   const showModal = (data) => {
 
     // const docRef = doc(db, "celmembers", data.id);
+    console.log(data.key);
+    setId(data.key)
     console.log(data);
     setModalData(data);
     setIsModalVisible(true);
@@ -120,8 +125,11 @@ const Members = () =>{
   const [modalData, setModalData] = useState(null);
 
 
-  const [name, setName] = useState();
-
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,48 +150,89 @@ const Members = () =>{
 
   const handleOk = () => {
     // Upadate Firebase Query :)
-    setIsModalVisible(false);
+    console.log(name, email, phone, address);
+
+    const docRef = doc(db, 'cellmembers', id);
+    const data = {
+      fullname: name,
+      email: email,
+      address: address,
+      phone : phone 
+    };
+
+// filter out empty string fields from data object
+const filteredData = Object.fromEntries(
+  Object.entries(data).filter(([_, value]) => value !== '')
+);
+
+     updateDoc(docRef, filteredData, {merge: true})
+      .then(result =>{
+        location.reload();
+      }).catch((error) => {
+        notification.error({
+          message: 'Error',
+          description: error.message
+        })
+      });
+     setIsModalVisible(false);
   };
+
+  const handleCancel = () =>{
+    setIsModalVisible(false);
+  }
 
   const handleName = (e) =>{
     setName(e.target.value)
     console.log(...modalData.fullname);
   }
 
+  // const addGroup = async () =>{
+  //   const data = JSON
+  //   const result = data.map(async(ele) =>{
+  //     const docRef = await addDoc(collection(db, 'cellmembers'), {
+  //       fullname: ele['FULL NAMES'],
+  //       phone: ele['PHONE NUMBER'],
+  //       role: [],
+  //       email: ele['EMAIL'],
+  //       cell: ele.CELL,
+  //       goc: ele.GOC,
+  //       address: ele.ADDRESS,
+  //       meetings: [],
+  //       cellmeeting: []
+  //     })
+  //     console.log('Successful');
+  //     console.log(docRef);
+
+  //   })
+  // }
+
     return (
-         <div>
-           {/* <div style={{width: '100%', height:'30vh', overflow:'hidden', margin: '10px auto'}}>
-            <img src={CellImage} alt="" style={{width: '100%'}}/>
-           </div> */}
+         <div> 
            <div className="headers"><h1>CELL MEMBERS</h1></div>
            <div style={{padding: '20px'}}>
+
+            {/* <Button onClick={addGroup}>Group Add</Button> */}
 
             <Table columns={columns} dataSource={data} />
            </div>
 
-           <Modal title="Edit User" open={isModalVisible} onOk={handleOk} onCancel={handleOk} okText="Update">
+           <Modal title="Edit User" open={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="Update">
                 {modalData && (
-                  <div>
-
+                  <form>
                     <p>Name</p>
-                    <Input value={modalData.fullname}
-                      onClick={handleName}
-
-                    />
+                    <Input onChange={(e) => setName(e.target.value)} placeholder={modalData.fullname} />
                     <p>Phone</p>
-                    <Input value={modalData.phone} />
-                    <p>Cell</p>
-                    <Input value={modalData.cell} />
+                    <Input onChange={(e) => setPhone(e.target.value)} placeholder={modalData.phone} />
                     <p>Address</p>
-                    <Input value={modalData.address} />
+                    <Input onChange={(e) => setAddress(e.target.value)} placeholder={modalData.address} />
                     <p>Email</p>
-                    <Input value={modalData.email} />
-                  </div>
+                    <Input onChange={(e) => setEmail(e.target.value)} placeholder={modalData.email} />
+                  </form>
                 )}
             </Modal>
 
 
-
+            
 
 
          </div>

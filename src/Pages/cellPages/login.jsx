@@ -36,17 +36,18 @@ const Login = () =>{
             const q = query(collection(db, "cellmembers"), where("email", "==", user.email));
             const querySnapshot = await getDocs(q);
 
-            console.log(querySnapshot);
+            // console.log(querySnapshot);
 
             querySnapshot.forEach(ele =>{
                 let data = {
                     name: ele.data().fullname,
                     email: ele.data().email,
-                    cell: ele.data().cell
+                    cell: ele.data().cell,
+                    goc: ele.data().goc
                 }
                 console.log(data);
 
-                userdetails.setUserData(data.name, data.email, data.cell);
+                userdetails.setUserData(data.name, data.email, data.cell, data.goc);
                 localStorage.setItem('ceshepharduser', JSON.stringify(data)) 
                 
             })
@@ -57,7 +58,6 @@ const Login = () =>{
                 message: 'Error',
                 description: error.message.split(':')[1],
                 duration: 3
-
             })
             console.log(error.message); // Error object containing information about the error
           }
