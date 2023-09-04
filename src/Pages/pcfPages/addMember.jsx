@@ -3,13 +3,11 @@ import { useState } from 'react';
 import { DownloadOutlined, SmileOutlined, FrownOutlined  } from '@ant-design/icons';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from '../../firebaseConfig';
-import { collection, addDoc  } from 'firebase/firestore';
-import GOC from '../../assets/data/goc.json'
+import { collection, addDoc, getDocs, orderBy, query  } from 'firebase/firestore';
 
 const AddMember = () =>{
 
     const [api, contextHolder] = notification.useNotification();
-    const gocs = Array.from({ length: 30 }, (_, index) => (index + 1).toString());
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -18,9 +16,29 @@ const AddMember = () =>{
     const [address, setAddress] = useState('');
     const [role, setRole] = useState('');
     const [group, setGroup] = useState('');
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
+
+    const [groupOfCells, setGroupOfCells] = useState([])
+    
 
     const auth = getAuth();
+
+
+    useState(() =>{
+      const groups = async () =>{
+        const collectionRef = collection(db, 'groups');
+        const q = query(collectionRef, orderBy('group'))
+        const response = await getDocs(q);
+        const result = response.docs.map(doc =>{
+          console.log(doc.data());
+          return doc.data()
+        })
+
+        setGroupOfCells([...result])
+      }
+
+      groups()
+    }, [])
 
     const handleCellChange = (value) =>{
         setCell(value)
@@ -30,18 +48,18 @@ const AddMember = () =>{
         console.log(value);
         setRole(value);
 
-        console.log(gocs);
+        // console.log(gocs);
       }
 
       const handleGroupChange = (value) =>{
         setGroup(value);
 
-        const data = GOC.find(ele =>{
-          return ele.id === value
+        const data = groupOfCells.find(ele =>{
+          return ele.group === value
         });
 
-        setData(data.cells)
-        console.log(data.cells);
+        setData(data.cells);
+        console.log(data.cells[0]);
       }
 
     const handleSubmit = async() =>{
@@ -55,7 +73,8 @@ const AddMember = () =>{
             goc: 'Goc'+group,
             address: address,
             meetings: [],
-            cellmeeting: []
+            cellmeeting: [],
+            password: null
           })
           console.log(docRef);
     
@@ -103,14 +122,12 @@ const AddMember = () =>{
                         marginBottom: '10px'
                     }}
 
-                    options={gocs.map((ele, index) =>({label: 'GOC'+(index +1), value: parseInt(ele)}))}
-
+                    options={groupOfCells?.map(ele =>({label: ele.group, value: ele.group}))}
                     onChange={handleGroupChange}
+                    
                     />
 
                     <Select
-
-                    defaultValue={data[0]}
                     placeholder="Cell"
                     style={{
                         flex: 1,
@@ -160,7 +177,7 @@ const AddMember = () =>{
                 <Input placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
 
                     <Button onClick={handleSubmit} style={{marginTop: '15px'}} type="primary" icon={<DownloadOutlined />}>
-                       Add Admin
+                       Add Member
                     </Button>
                  </form>
             </Card>

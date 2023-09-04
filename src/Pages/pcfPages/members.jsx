@@ -133,17 +133,24 @@ const Members = () =>{
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getDocs(collection(db, 'cellmembers'));
-      const dataArray = response.docs.map((doc) => ({
-        key: doc.id,
-        fullname: doc.data().fullname,
-        phone: doc.data().phone,
-        cell: doc.data().cell,
-        address: doc.data().address,
-        email: doc.data().email
-      }));
-      setName(dataArray.fullname)
-      setData(dataArray);
+      try{
+        const response = await getDocs(collection(db, 'cellmembers'));
+        const dataArray = response.docs.map((doc) => ({
+          key: doc.id,
+          fullname: doc.data().fullname,
+          phone: doc.data().phone,
+          cell: doc.data().cell,
+          address: doc.data().address,
+          email: doc.data().email
+        }));
+        setName(dataArray.fullname)
+        setData(dataArray);
+
+      }catch(err){
+        console.log(err);
+        console.log('loading');
+      }
+    
     };
     fetchData();
   }, []);

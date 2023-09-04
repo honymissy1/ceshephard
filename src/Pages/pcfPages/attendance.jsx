@@ -3,7 +3,7 @@ import { useState } from 'react';
 import User from '../../context/userContext';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
-import { DownloadOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { DownloadOutlined, CheckOutlined, CloseOutlined, PhoneFilled } from '@ant-design/icons';
 
 
 const Attendance = () =>{
@@ -221,7 +221,7 @@ const Attendance = () =>{
           dataIndex: 'phone',
           key: 'phone',
           ellipsis: true,
-          render: (text) => <a href={"tel:"+text}>{text}</a>,
+          render: (text) => <a href={"tel:"+text}>{<PhoneFilled />}</a>,
 
         },
 
